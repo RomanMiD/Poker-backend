@@ -1,19 +1,24 @@
 import { Document, model, Schema } from 'mongoose';
-import { UserRegistration } from '../interfaces/user-registration';
+import {
+  UserBase,
+  UserRegistration
+} from "poker-common";
 
-interface UserDocument extends Document, UserRegistration{
+export interface UserDocument extends Document, UserRegistration {
+  base(): UserBase;
 }
+
 const UserSchema = new Schema<UserDocument>({
   email: {
     type: String,
     required: true,
     unique: true,
   },
-  name:{
+  name: {
     type: String,
     required: true,
   },
-  password:{
+  password: {
     type: String,
     required: true,
   }
@@ -22,3 +27,6 @@ const UserSchema = new Schema<UserDocument>({
 
 export const UserModel = model<UserDocument>('User', UserSchema);
 
+UserModel.prototype.base = function (): UserBase {
+  return {email: this.email, name: this.name}
+}

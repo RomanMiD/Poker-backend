@@ -20,6 +20,7 @@
     "moment": "^2.29.1",
     "mongodb": "^3.6.3",
     "mongoose": "^5.11.15",
+    "poker-common": "file:../pokher-common",
     "socket.io": "^3.1.2"
   },
   "devDependencies": {
