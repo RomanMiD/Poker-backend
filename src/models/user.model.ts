@@ -4,7 +4,7 @@ import {
   UserRegistration
 } from "poker-common";
 
-export interface UserDocument extends Document, UserRegistration {
+export interface UserDocument extends Document, Omit<UserRegistration, "_id"> {
   base(): UserBase;
 }
 
@@ -28,5 +28,5 @@ const UserSchema = new Schema<UserDocument>({
 export const UserModel = model<UserDocument>('User', UserSchema);
 
 UserModel.prototype.base = function (): UserBase {
-  return {email: this.email, name: this.name}
+  return {email: this.email, name: this.name, _id: this._id}
 }

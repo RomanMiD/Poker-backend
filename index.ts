@@ -13,7 +13,7 @@ import { MiddlewareError } from "./src/classes/middleware-error";
 const PORT = 3000;
 const app = express();
 
-app.use(cors())
+app.use(cors());
 app.use(bodyParser.json());
 app.use('/api', apiRoute);
 app.use('/', pagesRoute);
