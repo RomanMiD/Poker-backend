@@ -1,10 +1,10 @@
 import { UserDocument, UserModel } from '../../models/user.model';
 import { UserUtilities } from '../../utilities/user.utilities';
 import { Request, Response } from 'express';
-import { LoginRequest, RegistrationRequest } from "poker-common";
-import { MiddlewareError } from "../../classes/middleware-error";
-import { MiddlewareUtilities } from "../../utilities/middleware.utilities";
-import { LoginResponseData } from "poker-common";
+import { LoginRequest, RegistrationRequest } from 'poker-common';
+import { MiddlewareError } from '../../classes/middleware-error';
+import { MiddlewareUtilities } from '../../utilities/middleware.utilities';
+import { LoginResponseData } from 'poker-common';
 
 
 export class UsersController {
@@ -22,15 +22,15 @@ export class UsersController {
       }
       return res.send(MiddlewareUtilities.responseData(res, responseData));
     } else {
-      next(new MiddlewareError('Incorrect email or password', 401));
+      next(new MiddlewareError('Incorrect email or password', 403));
     }
-  }
+  };
 
   static whoAmI(req: Request, res: Response) {
     const userDocument: UserDocument = res.locals.user;
 
     // throw new MiddlewareError('user or password not found', 401, 11111)
-    res.send(userDocument.base());
+    return res.send(MiddlewareUtilities.responseData(res, userDocument.base()));
   }
 
   static async registration(req: Request, res: Response, next: (err: MiddlewareError) => void) {
@@ -48,8 +48,6 @@ export class UsersController {
     if (userDocument) {
       return res.send(MiddlewareUtilities.responseData(res, userDocument.base()));
     }
-
-
   }
 }
 

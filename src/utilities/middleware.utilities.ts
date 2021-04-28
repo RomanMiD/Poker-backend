@@ -1,6 +1,5 @@
 import { Response } from "express";
 import { ResponseWrapper } from "poker-common";
-import { domainToASCII } from "url";
 
 export namespace MiddlewareUtilities {
   export const responseData = (res: Response, data: unknown) => {
@@ -8,6 +7,6 @@ export namespace MiddlewareUtilities {
       error: null,
       data
     };
-    res.send(responseBody);
+   return res.send(responseBody);
   }
 }

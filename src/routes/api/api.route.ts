@@ -5,5 +5,5 @@ import { gameApiRoute } from './game.route';
 export const apiRoute = Router();
 
 apiRoute.use('/users', userApiRoute);
-apiRoute.use('/game', gameApiRoute)
+apiRoute.use('/game', gameApiRoute);
 

@@ -7,7 +7,6 @@ import { accessMiddleware } from '../../middlewares/access.middleware';
 import { whoAmIBodySchema } from './json-schemas/user/who-am-i.schema';
 
 
-
 export const userApiRoute = Router();
 const validate = new Validator({allErrors: true}).validate;
 
@@ -16,5 +15,4 @@ userApiRoute.post('/registration', validate({body: registrationBodySchema}), Use
 userApiRoute.post('/login', validate({body: loginBodySchema}), UsersController.login);
 
 userApiRoute.post('/whoAmI', validate({body: whoAmIBodySchema}), accessMiddleware, UsersController.whoAmI);
-
 

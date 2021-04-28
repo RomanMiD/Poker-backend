@@ -2,8 +2,9 @@ import {Request, Response} from 'express';
 import {UserUtilities} from '../utilities/user.utilities';
 import {UserModel} from '../models/user.model';
 import {RequestHandler} from 'express-serve-static-core';
+import { MiddlewareError } from '../classes/middleware-error';
 
-export const accessMiddleware = async (req: Request, res: Response, next: () => void) => {
+export const accessMiddleware = async (req: Request, res: Response, next: (err?: MiddlewareError) => void) => {
   //Есть ли заголовок авторизации
   if (req.headers.authorization) {
     // разделяем заголовок авторизации на две части
@@ -22,7 +23,6 @@ export const accessMiddleware = async (req: Request, res: Response, next: () => 
         const userDocument = await UserModel.findOne({email});
         // если пользователь есть, то он есть(отвечаем чем-то как-то)
         if (userDocument) {
-          // res.send({email: userDocument.email});
           res.locals.user = userDocument;
           next();
           return;
@@ -30,5 +30,6 @@ export const accessMiddleware = async (req: Request, res: Response, next: () => 
       }
     }
   }
-  res.status(403).send({data: null, error: 'invalid token'})
+
+  next(new MiddlewareError('invalid token', 401));
 }
