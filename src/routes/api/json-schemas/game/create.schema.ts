@@ -1,18 +1,19 @@
-import { JSONSchema7 } from "json-schema";
+import { JSONSchema7 } from 'json-schema';
+import { emailSchema } from '../common.schema';
 
 
 export const newGameBodySchema: JSONSchema7 = {
-  type: "object",
+  type: 'object',
   additionalProperties: false,
-  required: ["roomName", "description", "stories"],
+  required: ['roomName', 'description', 'stories'],
   properties: {
     roomName: {
-      type: "string",
+      type: 'string',
       minLength: 3,
       maxLength: 40,
     },
     description: {
-      type: "string",
+      type: 'string',
       minLength: 3,
       maxLength: 150,
     },
@@ -24,16 +25,20 @@ export const newGameBodySchema: JSONSchema7 = {
         required: ["title", "body", "position"],
         properties: {
           title: {
-            type: "string"
+            type: 'string'
           },
           body: {
-            type: "string"
+            type: 'string'
           },
           position: {
-            type: "number"
+            type: 'number'
           }
         }
       }
+    },
+    playersEmail: {
+      type: 'array',
+      items: emailSchema
     }
   }
 }

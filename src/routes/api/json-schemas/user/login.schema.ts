@@ -1,5 +1,5 @@
 import { JSONSchema7 } from 'json-schema';
-
+import { emailSchema } from '../common.schema';
 
 export const loginBodySchema: JSONSchema7 = {
   type: 'object',
@@ -11,11 +11,6 @@ export const loginBodySchema: JSONSchema7 = {
       minLength: 6,
       maxLength: 50,
     },
-    email: {
-      type: 'string',
-      pattern: '^[^@]+@[^@]+\\.[^@]+$',
-      format: 'email',
-      maxLength:100,
-    }
+    email: emailSchema
   }
 }

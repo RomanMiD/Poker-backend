@@ -1,5 +1,5 @@
-import { model, Schema, Document } from "mongoose";
-import { Story } from "poker-common";
+import { Document, model, Schema } from 'mongoose';
+import { Story } from 'poker-common';
 
 export interface StoryDocument extends Document, Omit<Story, "_id"> {
   base(): Story
@@ -18,14 +18,14 @@ const storySchema = new Schema<StoryDocument>({
     type: Number,
     required: true
   },
-  gameId: {
+  gameID: {
     type: String,
     required: true
   }
 
 })
 storySchema.methods.base = function (): Story {
-  return {_id: this._id, body: this.body, position: this.position, title: this.title, gameId: this.gameId};
+  return {_id: this._id, body: this.body, position: this.position, title: this.title, gameID: this.gameID};
 };
 
-export const storyModel = model<StoryDocument>("Story", storySchema);
+export const StoryModel = model<StoryDocument>('Story', storySchema);

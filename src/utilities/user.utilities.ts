@@ -15,13 +15,13 @@ export namespace UserUtilities {
       _id: userData._id,
       email: userData.email,
     }
-      return jwt.sign({data}, userConfig.secretJwt, {expiresIn: userConfig.sessionExpires});
+    return jwt.sign({data}, userConfig.secretJwt, {expiresIn: userConfig.sessionExpires});
 
   }
-  export const decodeJwt=(token:string)=>{
-    try{
+  export const decodeJwt = (token: string) => {
+    try {
       return jwt.verify(token, userConfig.secretJwt);
-    } catch (e){
+    } catch (e) {
       return null;
     }
   };

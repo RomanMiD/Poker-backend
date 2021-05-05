@@ -1,10 +1,9 @@
-import {Request, Response} from 'express';
-import {UserUtilities} from '../utilities/user.utilities';
-import {UserModel} from '../models/user.model';
-import {RequestHandler} from 'express-serve-static-core';
+import { Request, Response } from 'express';
+import { UserUtilities } from '../utilities/user.utilities';
+import { UserModel } from '../models/user.model';
 import { MiddlewareError } from '../classes/middleware-error';
 
-export const accessMiddleware = async (req: Request, res: Response, next: (err?: MiddlewareError) => void) => {
+export const authMiddleware = async (req: Request, res: Response, next: (err?: MiddlewareError) => void) => {
   //Есть ли заголовок авторизации
   if (req.headers.authorization) {
     // разделяем заголовок авторизации на две части

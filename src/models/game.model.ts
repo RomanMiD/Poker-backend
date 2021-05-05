@@ -1,10 +1,11 @@
-import { Document, model, Schema } from "mongoose";
-import { Game } from "poker-common";
-import { storyModel } from "./story.model";
+import { Document, model, Schema } from 'mongoose';
+import { GameFull } from 'poker-common';
+import { StoryModel } from './story.model';
+import { PlayerModel } from './player.model';
 
 
-export interface GameDocument extends Document, Omit<Game, "_id"> {
-  base(): Game;
+export interface GameDocument extends Document, Omit<GameFull, '_id'> {
+  full(): GameFull;
 }
 
 const GameSchema = new Schema<GameDocument>({
@@ -19,16 +20,15 @@ const GameSchema = new Schema<GameDocument>({
   description: String
 
 }, {timestamps: {createdAt: "createdDate", updatedAt: "updatedDate"}})
-GameSchema.methods.base = async function (): Promise<Game> {
-
+GameSchema.methods.full = async function (): Promise<GameFull> {
   return {
     createdDate: this.createdDate,
     creatorID: this.creatorID,
     description: this.description,
     roomName: this.roomName,
     _id: this._id,
-    stories: (await storyModel.find({gameId: this._id})).map((storyDocument) => storyDocument.base()),
-    playersID: []
+    stories: (await StoryModel.find({gameID: this._id})).map((storyDocument) => storyDocument.base()),
+    players: (await PlayerModel.find({gameID: this._id})).map((playerDocument) => playerDocument.base())
   };
 
 }
