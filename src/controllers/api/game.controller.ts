@@ -5,8 +5,9 @@ import { MiddlewareUtilities } from '../../utilities/middleware.utilities';
 import { UserDocument, UserModel } from '../../models/user.model';
 import { StoryModel } from '../../models/story.model';
 import sanitize from 'mongo-sanitize';
-import { CreateGameRequest, GameBase, Player, PlayerStatus, Role } from 'poker-common';
+import { CreateGameRequest, GameBase, GameSituation, gameStatus, Player, PlayerStatus, Role } from 'poker-common';
 import { PlayerModel } from '../../models/player.model';
+import { GameSituationModel } from '../../models/game-situation.model';
 
 
 export class GameController {
@@ -38,6 +39,18 @@ export class GameController {
       lastOnlineDate: null
     };
     await PlayerModel.create(creator);
+
+    const situation: GameSituation = {
+      gameID: gameDocument._id,
+      status: gameStatus.Idle,
+      // TODO Додумать это место.
+      // storiesResult: [],
+      storiesResult: null,
+      currentStoryID: null
+    };
+    console.log(req.body)
+    await GameSituationModel.create(situation);
+
     if (gameDocument) {
       MiddlewareUtilities.responseData(res, await gameDocument.full());
     } else {
@@ -60,7 +73,6 @@ export class GameController {
 
   static async list(req: Request, res: Response, _next: (err: MiddlewareError) => void) {
     const playersDocuments = await PlayerModel.find({userID: res.locals.user._id});
-    console.log(playersDocuments)
     if (!playersDocuments.length) {
       // Если нет игроков, то нет и игр
       MiddlewareUtilities.responseData(res, []);
