@@ -22,3 +22,8 @@ gameApiRoute.get('/full/:id',
   }),
   GameController.full);
 
+gameApiRoute.get('/list',
+  validate({params: strictBlackSchema, query: strictBlackSchema, body: strictBlackSchema}),
+  authMiddleware,
+  GameController.list);
+

@@ -5,7 +5,7 @@ import { MiddlewareUtilities } from '../../utilities/middleware.utilities';
 import { UserDocument, UserModel } from '../../models/user.model';
 import { StoryModel } from '../../models/story.model';
 import sanitize from 'mongo-sanitize';
-import { CreateGameRequest, Player, PlayerStatus, Role } from 'poker-common';
+import { CreateGameRequest, GameBase, Player, PlayerStatus, Role } from 'poker-common';
 import { PlayerModel } from '../../models/player.model';
 
 
@@ -56,6 +56,20 @@ export class GameController {
       next(new MiddlewareError('invalid id', 400));
     }
 
+  };
+
+  static async list(req: Request, res: Response, _next: (err: MiddlewareError) => void) {
+    const playersDocuments = await PlayerModel.find({userID: res.locals.user._id});
+    console.log(playersDocuments)
+    if (!playersDocuments.length) {
+      // Если нет игроков, то нет и игр
+      MiddlewareUtilities.responseData(res, []);
+      return;
+    }
+    const gamesIDs = playersDocuments.map((player) => player.gameID);
+    const games: GameBase[] = (await GameModel.find().where('_id').in(gamesIDs))
+      .map((gameDocument) => gameDocument.base());
+    MiddlewareUtilities.responseData(res, games);
   }
 
 }
