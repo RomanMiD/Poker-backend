@@ -13,6 +13,7 @@ const GameSchema = new Schema<GameDocument>({
     type: String,
     required: true
   },
+  // не используется(Но используется) ВЫПИЛИТЬ
   creatorID: {
     type: String,
     required: true

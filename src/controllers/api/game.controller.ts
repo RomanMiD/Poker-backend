@@ -30,6 +30,14 @@ export class GameController {
       lastOnlineDate: null
     }));
     await PlayerModel.insertMany(players);
+    const creator: Player = {
+      userID: res.locals.user._id,
+      role: Role.Creator,
+      status: PlayerStatus.NotInTheGame,
+      gameID: gameDocument._id,
+      lastOnlineDate: null
+    };
+    await PlayerModel.create(creator);
     if (gameDocument) {
       MiddlewareUtilities.responseData(res, await gameDocument.full());
     } else {
@@ -39,9 +47,9 @@ export class GameController {
   }
 
   static async full(req: Request, res: Response, next: (err: MiddlewareError) => void) {
-    const foundGamaData = {_id: sanitize(req.params.id)};
+    const foundGameData = {_id: sanitize(req.params.id)};
 
-    const gameDocument = await GameModel.findOne(foundGamaData);
+    const gameDocument = await GameModel.findOne(foundGameData);
     if (gameDocument) {
       MiddlewareUtilities.responseData(res, await gameDocument.full());
     } else {
