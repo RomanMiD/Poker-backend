@@ -6,3 +6,8 @@ export const emailSchema: JSONSchema7 = {
   format: 'email',
   maxLength: 100,
 }
+
+export const strictBlackSchema: JSONSchema7 = {
+  type: 'object',
+  additionalProperties: false
+}
