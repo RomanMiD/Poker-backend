@@ -15,8 +15,7 @@ export class GameController {
   static async create(req: Request, res: Response, next: (err: MiddlewareError) => void) {
     const userDocument: UserDocument = res.locals.user;
     const createGameData: CreateGameRequest = {
-      ...sanitize(req.body),
-      creatorID: userDocument.base()._id
+      ...sanitize(req.body)
     }
     const newGame = new GameModel(createGameData);
     const gameDocument = await newGame.save();
@@ -32,7 +31,7 @@ export class GameController {
     }));
     await PlayerModel.insertMany(players);
     const creator: Player = {
-      userID: res.locals.user._id,
+      userID: userDocument._id ,
       role: Role.Creator,
       status: PlayerStatus.NotInTheGame,
       gameID: gameDocument._id,
