@@ -7,6 +7,7 @@ import { fullGameParamsSchema } from './json-schemas/game/full.schema';
 import { gameAccessMiddleware } from '../../middlewares/access.middleware';
 import { RequestOptionKey } from '../../common/enums/data-types';
 import { strictBlackSchema } from './json-schemas/common.schema';
+import { listQuerySchema } from './json-schemas/game/list.schema';
 
 export const gameApiRoute = Router();
 
@@ -23,7 +24,7 @@ gameApiRoute.get('/full/:id',
   GameController.full);
 
 gameApiRoute.get('/list',
-  validate({params: strictBlackSchema, query: strictBlackSchema, body: strictBlackSchema}),
+  validate({params: strictBlackSchema, query: listQuerySchema, body: strictBlackSchema}),
   authMiddleware,
   GameController.list);
 

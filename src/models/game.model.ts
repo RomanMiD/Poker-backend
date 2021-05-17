@@ -33,7 +33,7 @@ GameSchema.methods.full = async function (): Promise<GameFull> {
     ...base,
     stories: (await StoryModel.find({gameID: this._id})).map((storyDocument) => storyDocument.base()),
     players: (await PlayerModel.find({gameID: this._id})).map((playerDocument) => playerDocument.base()),
-    situation: (await GameSituationModel.findOne({gameID: this._id}))?.toObject() || null
+    situation: (await GameSituationModel.findOne({gameID: this._id}))?.base() || null
   };
 
 }

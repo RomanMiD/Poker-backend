@@ -71,7 +71,11 @@ export class GameController {
   };
 
   static async list(req: Request, res: Response, _next: (err: MiddlewareError) => void) {
-    const playersDocuments = await PlayerModel.find({userID: res.locals.user._id});
+    const paginationParams = {
+      limit: +((req?.query?.limit) || '10'),
+      skip: +((req?.query?.skip) || '0')
+    }
+    const playersDocuments = await PlayerModel.find({userID: res.locals.user._id}, {}, paginationParams);
     if (!playersDocuments.length) {
       // Если нет игроков, то нет и игр
       MiddlewareUtilities.responseData(res, []);
@@ -82,5 +86,7 @@ export class GameController {
       .map((gameDocument) => gameDocument.base());
     MiddlewareUtilities.responseData(res, games);
   }
+
+
 
 }

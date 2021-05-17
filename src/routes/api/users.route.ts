@@ -16,7 +16,7 @@ userApiRoute.post('/registration', validate({body: registrationBodySchema, param
 
 userApiRoute.post('/login', validate({body: loginBodySchema, params: strictBlackSchema, query: strictBlackSchema}), UsersController.login);
 
-userApiRoute.post('/whoAmI', validate({body: whoAmIBodySchema, params: strictBlackSchema, query:strictBlackSchema}), authMiddleware, UsersController.whoAmI);
+userApiRoute.get('/whoAmI', validate({body: whoAmIBodySchema, params: strictBlackSchema, query:strictBlackSchema}), authMiddleware, UsersController.whoAmI);
 
 userApiRoute.get('/find', validate({query: findQuerySchema, params: strictBlackSchema, body: strictBlackSchema}), authMiddleware, UsersController.find);
 
