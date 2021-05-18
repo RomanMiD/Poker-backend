@@ -5,7 +5,16 @@ import { MiddlewareUtilities } from '../../utilities/middleware.utilities';
 import { UserDocument, UserModel } from '../../models/user.model';
 import { StoryModel } from '../../models/story.model';
 import sanitize from 'mongo-sanitize';
-import { CreateGameRequest, GameBase, GameSituation, gameStatus, Player, PlayerStatus, Role } from 'poker-common';
+import {
+  CreateGameRequest,
+  GameBase,
+  GameListItem,
+  GameSituation,
+  GameStatus,
+  Player,
+  PlayerStatus,
+  Role
+} from 'poker-common';
 import { PlayerModel } from '../../models/player.model';
 import { GameSituationModel } from '../../models/game-situation.model';
 
@@ -41,7 +50,7 @@ export class GameController {
 
     const situation: GameSituation = {
       gameID: gameDocument._id,
-      status: gameStatus.Idle,
+      status: GameStatus.Idle,
       // TODO Додумать это место.
       // storiesResult: [],
       storiesResult: null,
@@ -72,7 +81,7 @@ export class GameController {
 
   static async list(req: Request, res: Response, _next: (err: MiddlewareError) => void) {
     const paginationParams = {
-      limit: +((req?.query?.limit) || '10'),
+      // limit: +((req?.query?.limit) || '10'),
       skip: +((req?.query?.skip) || '0')
     }
     const playersDocuments = await PlayerModel.find({userID: res.locals.user._id}, {}, paginationParams);
@@ -82,8 +91,9 @@ export class GameController {
       return;
     }
     const gamesIDs = playersDocuments.map((player) => player.gameID);
-    const games: GameBase[] = (await GameModel.find().where('_id').in(gamesIDs))
-      .map((gameDocument) => gameDocument.base());
+    const gamesPromises: Promise<GameListItem>[] = (await GameModel.find().where('_id').in(gamesIDs))
+      .map(async (gameDocument) => await gameDocument.listItem());
+    const games= await Promise.all(gamesPromises)
     MiddlewareUtilities.responseData(res, games);
   }
 

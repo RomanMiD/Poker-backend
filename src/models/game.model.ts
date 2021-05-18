@@ -1,13 +1,17 @@
 import { Document, model, Schema } from 'mongoose';
-import { GameBase, GameFull } from 'poker-common';
+import { GameBase, GameFull, GameListItem, GameSituation, Player, Role, UserBase } from 'poker-common';
 import { StoryModel } from './story.model';
 import { PlayerModel } from './player.model';
 import { GameSituationModel } from './game-situation.model';
+import { UserModel } from './user.model';
 
 
 export interface GameDocument extends Document, Omit<GameFull, '_id'> {
-  full(): GameFull;
+  full(): Promise<GameFull>;
+
   base(): GameBase;
+
+  listItem(): Promise<GameListItem> // интерефейс допилить
 }
 
 const GameSchema = new Schema<GameDocument>({
@@ -28,7 +32,7 @@ GameSchema.methods.base = function (): GameBase {
   };
 }
 GameSchema.methods.full = async function (): Promise<GameFull> {
-  const base =  this.base();
+  const base = this.base();
   return {
     ...base,
     stories: (await StoryModel.find({gameID: this._id})).map((storyDocument) => storyDocument.base()),
@@ -37,6 +41,38 @@ GameSchema.methods.full = async function (): Promise<GameFull> {
   };
 
 }
+GameSchema.methods.listItem = async function (): Promise<GameListItem> {
+  const listItem = {
+    ...this.base(),
+    creator: null
+  } as GameListItem;
 
-export const GameModel = model<GameDocument>("Game", GameSchema);
+  const gameSituation: GameSituation | null = (await GameSituationModel.findOne({gameID: this._id}))?.base() || null;
+  listItem.status = gameSituation?.status || null
+
+  const gameCreatorPlayer: Player | null = (
+    await PlayerModel.findOne({
+      gameID: this._id,
+      role: Role.Creator
+    })
+  )?.base() || null;
+
+  if (gameCreatorPlayer) {
+    const gameCreatorUser: UserBase | null = (
+      await UserModel.findOne({
+        _id: gameCreatorPlayer.userID
+      })
+    )?.base() || null;
+
+    if (gameCreatorUser) {
+      listItem.creator = gameCreatorUser;
+    }
+  }
+
+  return listItem;
+
+
+}
+
+export const GameModel = model<GameDocument>('Game', GameSchema);
 
