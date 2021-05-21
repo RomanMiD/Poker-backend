@@ -7,10 +7,10 @@ import { StoryModel } from '../../models/story.model';
 import sanitize from 'mongo-sanitize';
 import {
   CreateGameRequest,
-  GameBase,
   GameListItem,
   GameSituation,
   GameStatus,
+  PaginationWrapper,
   Player,
   PlayerStatus,
   Role
@@ -56,7 +56,6 @@ export class GameController {
       storiesResult: null,
       currentStoryID: null
     };
-    console.log(req.body)
     await GameSituationModel.create(situation);
 
     if (gameDocument) {
@@ -80,23 +79,35 @@ export class GameController {
   };
 
   static async list(req: Request, res: Response, _next: (err: MiddlewareError) => void) {
+
     const paginationParams = {
-      // limit: +((req?.query?.limit) || '10'),
-      skip: +((req?.query?.skip) || '0')
+      limit: +((req?.query?.limit) || '10'),
+      skip: +((req?.query?.skip) || '0'),
     }
-    const playersDocuments = await PlayerModel.find({userID: res.locals.user._id}, {}, paginationParams);
+
+    const playersDocuments = await PlayerModel.find({userID: res.locals.user._id}, {},);
     if (!playersDocuments.length) {
       // Если нет игроков, то нет и игр
       MiddlewareUtilities.responseData(res, []);
       return;
     }
+
     const gamesIDs = playersDocuments.map((player) => player.gameID);
-    const gamesPromises: Promise<GameListItem>[] = (await GameModel.find().where('_id').in(gamesIDs))
-      .map(async (gameDocument) => await gameDocument.listItem());
-    const games= await Promise.all(gamesPromises)
-    MiddlewareUtilities.responseData(res, games);
+    //общее количество элементов без пагинации
+    const count = await GameModel.find().where('_id').in(gamesIDs).countDocuments();
+    //список элементов-промисов после пагинации
+    const gamesPromises: Promise<GameListItem>[] = (await GameModel.find().where('_id').in(gamesIDs)
+        .skip(paginationParams.skip)
+        .limit(paginationParams.limit)
+    ).map(async (gameDocument) => await gameDocument.listItem());
+
+    const games: GameListItem[] = await Promise.all(gamesPromises);
+    const responseData: PaginationWrapper<GameListItem> = {
+      count,
+      items: games
+    };
+
+    MiddlewareUtilities.responseData(res, responseData);
   }
-
-
 
 }
