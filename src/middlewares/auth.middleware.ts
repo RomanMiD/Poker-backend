@@ -23,6 +23,7 @@ export const authMiddleware = async (req: Request, res: Response, next: (err?: M
         // если пользователь есть, то он есть(отвечаем чем-то как-то)
         if (userDocument) {
           res.locals.user = userDocument;
+          res.append('update-token', UserUtilities.generateJwt(userDocument));
           next();
           return;
         }

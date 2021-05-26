@@ -11,7 +11,7 @@ import {
   GameSituation,
   GameStatus,
   PaginationWrapper,
-  Player,
+  PlayerBase,
   PlayerStatus,
   Role
 } from 'poker-common';
@@ -31,7 +31,7 @@ export class GameController {
     const stories = createGameData.stories.map((story) => ({...story, gameID: gameDocument._id}));
     await StoryModel.insertMany(stories);
     const foundUsers = await UserModel.find().where('email').in(createGameData.playersEmail);
-    const players: Player[] = foundUsers.map((userDocument) => ({
+    const players: PlayerBase[] = foundUsers.map((userDocument) => ({
       userID: userDocument._id as string,
       role: Role.Observer,
       status: PlayerStatus.NotInTheGame,
@@ -39,8 +39,8 @@ export class GameController {
       lastOnlineDate: null
     }));
     await PlayerModel.insertMany(players);
-    const creator: Player = {
-      userID: userDocument._id ,
+    const creator: PlayerBase = {
+      userID: userDocument._id,
       role: Role.Creator,
       status: PlayerStatus.NotInTheGame,
       gameID: gameDocument._id,

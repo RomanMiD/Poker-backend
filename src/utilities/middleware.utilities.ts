@@ -7,6 +7,6 @@ export namespace MiddlewareUtilities {
       error: null,
       data
     };
-   return res.send(responseBody);
+    return res.send(responseBody);
   }
 }

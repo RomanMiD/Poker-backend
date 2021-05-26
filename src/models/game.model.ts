@@ -1,5 +1,5 @@
 import { Document, model, Schema } from 'mongoose';
-import { GameBase, GameFull, GameListItem, GameSituation, Player, Role, UserBase } from 'poker-common';
+import { GameBase, GameFull, GameListItem, GameSituation, PlayerBase, Role, UserBase } from 'poker-common';
 import { StoryModel } from './story.model';
 import { PlayerModel } from './player.model';
 import { GameSituationModel } from './game-situation.model';
@@ -33,10 +33,13 @@ GameSchema.methods.base = function (): GameBase {
 }
 GameSchema.methods.full = async function (): Promise<GameFull> {
   const base = this.base();
+
   return {
     ...base,
     stories: (await StoryModel.find({gameID: this._id})).map((storyDocument) => storyDocument.base()),
-    players: (await PlayerModel.find({gameID: this._id})).map((playerDocument) => playerDocument.base()),
+
+    players: await Promise.all((await PlayerModel.find({gameID: this._id})).map((playerDocument) => playerDocument.full())),
+
     situation: (await GameSituationModel.findOne({gameID: this._id}))?.base() || null
   };
 
@@ -50,7 +53,7 @@ GameSchema.methods.listItem = async function (): Promise<GameListItem> {
   const gameSituation: GameSituation | null = (await GameSituationModel.findOne({gameID: this._id}))?.base() || null;
   listItem.status = gameSituation?.status || null
 
-  const gameCreatorPlayer: Player | null = (
+  const gameCreatorPlayer: PlayerBase | null = (
     await PlayerModel.findOne({
       gameID: this._id,
       role: Role.Creator

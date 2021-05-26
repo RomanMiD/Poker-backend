@@ -1,7 +1,7 @@
 import { JSONSchema7 } from 'json-schema';
 
 
-export const listQuerySchema:JSONSchema7={
+export const listQuerySchema: JSONSchema7 = {
   additionalProperties: false,
   type: 'object',
   properties: {

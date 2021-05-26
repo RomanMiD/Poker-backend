@@ -1,8 +1,10 @@
 import { Document, model, Schema } from 'mongoose';
-import { Player, PlayerStatus, Role } from 'poker-common';
+import { PlayerBase, PlayerFull, PlayerStatus, Role } from 'poker-common';
+import { UserModel } from "./user.model";
 
-export interface PlayerDocument extends Document, Omit<Player, '_id'> {
-  base(): Player;
+export interface PlayerDocument extends Document, Omit<PlayerBase, '_id'> {
+  base(): PlayerBase;
+  full(): PlayerFull;
 }
 
 const PlayerSchema = new Schema<PlayerDocument>({
@@ -30,7 +32,7 @@ const PlayerSchema = new Schema<PlayerDocument>({
   }
 
 });
-PlayerSchema.methods.base = function (): Player {
+PlayerSchema.methods.base = function (): PlayerBase {
   return {
     _id: this._id,
     gameID: this.gameID,
@@ -38,6 +40,13 @@ PlayerSchema.methods.base = function (): Player {
     role: this.role,
     status: this.status,
     lastOnlineDate: this.lastOnlineDate
+  }
+};
+
+PlayerSchema.methods.full = async function (): Promise<PlayerFull>{
+  return {
+    ...this.base(),
+    user: (await UserModel.findOne({_id: this.userID}))?.base()
   }
 }
 export const PlayerModel = model<PlayerDocument>('Player', PlayerSchema);

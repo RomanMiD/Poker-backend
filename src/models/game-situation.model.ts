@@ -12,13 +12,14 @@ interface StoryResultDocument extends Document, StoryResult {
 interface VoteDocument extends Document, Vote {
   base(): Vote
 }
-const VoteSchema= new Schema<VoteDocument>({
-  playerID:{
+
+const VoteSchema = new Schema<VoteDocument>({
+  playerID: {
     type: String,
     default: '',
     required: true
   },
-  voteDate:{
+  voteDate: {
     type: Date,
     default: Date.now(),
     required: true
@@ -57,7 +58,7 @@ StoriesResultSchema.methods.base = function (): StoryResult {
   return {
     voteStartDate: this.voteStartDate,
     voteEndDate: this.voteEndDate,
-    votes: this.votes.map((vote) =>{
+    votes: this.votes.map((vote) => {
       const voteDocument = vote as VoteDocument;
       return voteDocument.base();
     })
@@ -84,11 +85,11 @@ GameSituationSchema.methods.base = function (): GameSituation {
     gameID: this.gameID,
     status: this.status,
     storiesResult: this.storiesResult?.map((storyResult) => {
-      const storyResultDocument = storyResult as StoryResultDocument ;
+      const storyResultDocument = storyResult as StoryResultDocument;
       return storyResultDocument.base();
     })
 
   }
 }
 
-export const GameSituationModel = model<GameSituationDocument>("GameSituation",GameSituationSchema);
+export const GameSituationModel = model<GameSituationDocument>("GameSituation", GameSituationSchema);
