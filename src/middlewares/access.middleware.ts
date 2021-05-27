@@ -1,9 +1,9 @@
-import { Request, Response } from 'express';
-import { MiddlewareError } from '../classes/middleware-error';
-import { RequestOptionKey } from '../common/enums/data-types';
-import { get } from 'lodash';
-import { PlayerDocument, PlayerModel } from '../models/player.model';
-import { Role } from '../../../pokher-common';
+import { Request, Response } from "express";
+import { MiddlewareError } from "../classes/middleware-error";
+import { RequestOptionKey } from "../common/enums/data-types";
+import { get } from "lodash";
+import { PlayerDocument, PlayerModel } from "../models/player.model";
+import { Role } from "poker-common";
 
 export const gameAccessMiddleware = ({optionKey, path}: { optionKey: RequestOptionKey, path: string }) => {
   return async (req: Request, res: Response, next: (err?: MiddlewareError) => void) => {
@@ -21,6 +21,6 @@ export const gameAccessMiddleware = ({optionKey, path}: { optionKey: RequestOpti
         return;
       }
     }
-    next(new MiddlewareError('access denied', 403));
+    next(new MiddlewareError("access denied", 403));
   }
 }
