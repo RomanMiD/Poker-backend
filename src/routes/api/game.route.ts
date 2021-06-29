@@ -13,6 +13,7 @@ export const gameApiRoute = Router();
 
 const validate = new Validator({allErrors: true}).validate;
 
+
 gameApiRoute.post("/create", validate({body: newGameBodySchema}), authMiddleware, GameController.create);
 
 gameApiRoute.get("/full/:id",
@@ -23,6 +24,7 @@ gameApiRoute.get("/full/:id",
     path: "id"
   }),
   GameController.full);
+
 
 gameApiRoute.get("/list",
   validate({params: strictBlackSchema, query: listQuerySchema, body: strictBlackSchema}),
