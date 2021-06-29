@@ -5,6 +5,9 @@ import { MiddlewareUtilities } from "../../utilities/middleware.utilities";
 import { UserDocument, UserModel } from "../../models/user.model";
 import { StoryModel } from "../../models/story.model";
 import sanitize from "mongo-sanitize";
+import { PlayerModel } from "../../models/player.model";
+import { GameSituationModel } from "../../models/game-situation.model";
+import { GameSocketsService } from "../../services/game-sockets.service";
 import {
   CreateGameRequest,
   GameListItem,
@@ -15,9 +18,6 @@ import {
   PlayerStatus,
   Role
 } from "poker-common";
-import { PlayerModel } from "../../models/player.model";
-import { GameSituationModel } from "../../models/game-situation.model";
-
 
 export class GameController {
 
@@ -113,23 +113,27 @@ export class GameController {
   static async joinGame(req: Request, res: Response, _next: (err: MiddlewareError) => void) {
     const gameID = req.params.gameID;
     const userDocument: UserDocument = res.locals.user;
-    const foundPlayer = await PlayerModel.find({gameID, userID: userDocument._id});
-    if (!foundPlayer.length) {
+    const foundPlayerDocument = await PlayerModel.findOne({gameID, userID: userDocument._id});
+    if (!foundPlayerDocument) {
       const newPlayer: PlayerBase = {
         gameID,
         userID: userDocument._id,
-        role: Role.Observer,
+        role: Role.Member,
         status: PlayerStatus.NotInTheGame,
         lastOnlineDate: null,
       };
 
-      await new PlayerModel(newPlayer).save();
-
-      MiddlewareUtilities.responseData(res, []);
-      return;
+      const newPlayerDocument = await new PlayerModel(newPlayer).save();
+      GameSocketsService.sendEveryone(gameID, {event: `player online`, data: newPlayerDocument.base()})
     } else {
-      MiddlewareUtilities.responseData(res, [{message: "Вы уже есть в игре"}]);
+      if (foundPlayerDocument.role !== Role.Banned) {
+        foundPlayerDocument.status = PlayerStatus.Online;
+        await foundPlayerDocument.save();
+        GameSocketsService.sendEveryone(gameID, {event: `player online`, data: foundPlayerDocument.base()})
+      }
     }
+
+    MiddlewareUtilities.responseData(res, {});
 
   }
 }
