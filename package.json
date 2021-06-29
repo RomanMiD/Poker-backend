@@ -15,6 +15,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-json-validator-middleware": "^2.1.1",
+    "express-ws": "^4.0.0",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
     "md5": "^2.3.0",
@@ -22,12 +23,13 @@
     "mongo-sanitize": "^1.1.0",
     "mongodb": "^3.6.3",
     "mongoose": "^5.11.15",
-    "poker-common": "file:../pokher-common",
+    "poker-common": "file:../poker-common",
     "socket.io": "^3.1.2"
   },
   "devDependencies": {
     "@types/body-parser": "^1.19.0",
     "@types/express": "^4.17.11",
+    "@types/express-ws": "^3.0.0",
     "@types/jsonwebtoken": "^8.5.1",
     "@types/lodash": "^4.14.168",
     "@types/md5": "^2.3.0",
